@@ -22,14 +22,24 @@ export const loginReq = async (body) => {
   }
 };
 
-
 export const uploadSuspectReq = async (body) => {
-    try {
-      const res = await axios.post(`/face-recognition/upload-suspect`, body);
-      return res.data;
-    } catch (err) {
-      if (err) {
-        return err.response?.data;
-      }
+  try {
+    const res = await axios.post(`/face-recognition/upload-suspect`, body);
+    return res.data;
+  } catch (err) {
+    if (err) {
+      return err.response?.data;
     }
-  };
+  }
+};
+
+export const getSuspectsReq = async () => {
+  try {
+    const res = await axios.get(`/face-recognition/fetch-suspects`);
+    return res.data;
+  } catch (err) {
+    if (err) {
+      return err.response?.data;
+    }
+  }
+};

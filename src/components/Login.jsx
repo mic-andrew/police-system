@@ -24,14 +24,14 @@ function Login() {
       const { success, message } = response ?? {};
       if (success) {
         console.log(message);
-        toast.success(JSON.stringify(message));
+        toast.success("User logged in successfully");
         navigate("/dashboard");
       } else {
-        toast.error(response?.message);
+        // toast.error(response?.message);
       }
     } catch (err) {
       console.log(err);
-      toast.error(err?.message ?? "Something went wrong");
+      // toast.error(err?.message ?? "Something went wrong");
     }
 
     setLoading(false);

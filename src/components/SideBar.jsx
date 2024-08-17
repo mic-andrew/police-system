@@ -32,13 +32,15 @@ function Sidebar() {
           <FaUserSecret className="inline-block mr-2" /> View Suspects
         </Link>
         <Link
-          to="/dashboard/upload-suspect"
+          to="/dashboard/captured-suspects"
           className={`block py-2.5 px-4 rounded transition duration-200 hover:bg-gray-700 ${isActive(
-            "/upload-suspect"
+            "/captured-suspects"
           )}`}
         >
-          <FaUpload className="inline-block mr-2" /> Upload Suspect Image
+          <FaUpload className="inline-block mr-2" /> Captured Suspects 
         </Link>
+
+        
       </nav>
     </div>
   );

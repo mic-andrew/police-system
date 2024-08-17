@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes, FaUpload } from "react-icons/fa";
 import { LiaTimesSolid } from "react-icons/lia";
 import { uploadSuspectReq } from "../request";
 import ReactLoading from "react-loading";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 
 const SuspectUploadModal = ({ isOpen, onClose }) => {
   const [name, setName] = useState("");
@@ -39,10 +38,11 @@ const SuspectUploadModal = ({ isOpen, onClose }) => {
 
     try {
       const result = await uploadSuspectReq(formData);
+      console.log(result);
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success("Suspect data uploaded successfully");
+        toast.success(result.message || "Suspect data uploaded successfully");
         onClose();
         // Reset form fields here if needed
       }
@@ -210,7 +210,6 @@ const SuspectUploadModal = ({ isOpen, onClose }) => {
           </motion.div>
         </motion.div>
       )}
-      <ToastContainer position="top-right" autoClose={5000} />
     </AnimatePresence>
   );
 };

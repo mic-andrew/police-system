@@ -3,7 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import Sidebar from "./SideBar";
 import Home from "./Home";
 import ViewSuspects from "./ViewSuspects";
-import UploadSuspectImage from "./UploadSuspectImage";
+import CapturedSuspects from './CapturedSuspects';
 
 
 function Dashboard() {
@@ -14,7 +14,8 @@ function Dashboard() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/view-suspects" element={<ViewSuspects />} />
-          <Route path="/upload-suspect" element={<UploadSuspectImage />} />
+          <Route path="/captured-suspects" element={<CapturedSuspects />} />
+
         </Routes>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -8,32 +8,50 @@ import {
   FaVenusMars,
 } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
-import { getSuspectsReq } from "../request";
 
-const SuspectTableView = () => {
-  const [suspects, setSuspects] = useState([]);
+// Mock data
+const mockSuspects = [
+  {
+    id: 1,
+    name: "John Doe",
+    age: 30,
+    lastLocation: "New York",
+    country: "USA",
+    gender: "Male",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    age: 25,
+    lastLocation: "London",
+    country: "UK",
+    gender: "Female",
+  },
+  {
+    id: 3,
+    name: "Alex Johnson",
+    age: 35,
+    lastLocation: "Paris",
+    country: "France",
+    gender: "Other",
+  },
+  // Add more mock data as needed
+];
+
+const CapturedSuspects = () => {
+  const [suspects, setSuspects] = useState(mockSuspects);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState({ country: "", gender: "" });
   const [selectedSuspect, setSelectedSuspect] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
+  // Simulated fetch function (replace with actual API call)
   const fetchSuspects = async () => {
     setIsLoading(true);
-    setError(null);
-    try {
-      const result = await getSuspectsReq();
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setSuspects(result);
-      }
-    } catch (err) {
-      setError("An error occurred while fetching suspects");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
+    // Simulating API delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setSuspects(mockSuspects);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -48,7 +66,7 @@ const SuspectTableView = () => {
     setFilter((prev) => ({ ...prev, [key]: value }));
   };
 
-  const filteredSuspects = suspects?.filter(
+  const filteredSuspects = suspects.filter(
     (suspect) =>
       suspect.name.toLowerCase().includes(search.toLowerCase()) &&
       (filter.country ? suspect.country === filter.country : true) &&
@@ -96,10 +114,6 @@ const SuspectTableView = () => {
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
         </div>
-      ) : error ? (
-        <div className="text-red-500 text-center">{error}</div>
-      ) : filteredSuspects.length === 0 ? (
-        <div className="text-center text-gray-500">No suspects available</div>
       ) : (
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full leading-normal">
@@ -125,7 +139,7 @@ const SuspectTableView = () => {
             <tbody>
               {filteredSuspects.map((suspect) => (
                 <tr
-                  key={suspect._id}
+                  key={suspect.id}
                   onClick={() => setSelectedSuspect(suspect)}
                   className="hover:bg-gray-50 cursor-pointer"
                 >
@@ -211,4 +225,4 @@ const SuspectTableView = () => {
   );
 };
 
-export default SuspectTableView;
+export default CapturedSuspects;
