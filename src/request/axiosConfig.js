@@ -1,7 +1,7 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const CORE_BACKEND_URL = "http://localhost:8000";
+const CORE_BACKEND_URL = import.meta.env.VITE_CORE_BACKEND_URL;
 
 const instance = axios.create({
   baseURL: CORE_BACKEND_URL,

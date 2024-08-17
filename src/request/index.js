@@ -2,7 +2,7 @@ import axios from "./axiosConfig";
 
 export const signupReq = async (body) => {
   try {
-    const res = await axios.post(`/auth/signup`, body);
+    const res = await axios.post(`/auth/register`, body);
     return res.data;
   } catch (err) {
     if (err) {

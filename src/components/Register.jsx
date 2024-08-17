@@ -19,20 +19,21 @@ function Register() {
     const data = {
       email,
       password,
+      firstName: name,
     };
     setLoading(true);
     try {
       const response = await signupReq(data);
 
       console.log(response);
-      if (response?.success) {
-        toast.success(response?.message);
+      const { success, message } = response ?? {};
+      if (success) {
+        toast.success(message ?? "User registered successfully");
         navigate("/dashboard");
       } else {
-        toast.error(response?.message);
+        toast.error(response?.message || "Something went wrong");
       }
     } catch (err) {
-      console.log(err);
       toast.error(err?.message ?? "Something went wrong");
     }
 
@@ -128,7 +129,7 @@ function Register() {
                 />
               </div>
             ) : (
-              "Login"
+              "Register"
             )}
           </button>
         </form>

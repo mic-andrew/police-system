@@ -21,10 +21,10 @@ function Login() {
     setLoading(true);
     try {
       const response = await loginReq(data);
-
-      console.log(response);
-      if (response?.success) {
-        toast.success(response?.message);
+      const { success, message } = response ?? {};
+      if (success) {
+        console.log(message);
+        toast.success(JSON.stringify(message));
         navigate("/dashboard");
       } else {
         toast.error(response?.message);
