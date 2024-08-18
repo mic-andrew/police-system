@@ -8,50 +8,33 @@ import {
   FaVenusMars,
 } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
-
-// Mock data
-const mockSuspects = [
-  {
-    id: 1,
-    name: "John Doe",
-    age: 30,
-    lastLocation: "New York",
-    country: "USA",
-    gender: "Male",
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    age: 25,
-    lastLocation: "London",
-    country: "UK",
-    gender: "Female",
-  },
-  {
-    id: 3,
-    name: "Alex Johnson",
-    age: 35,
-    lastLocation: "Paris",
-    country: "France",
-    gender: "Other",
-  },
-  // Add more mock data as needed
-];
+import { getSuspectsReq } from "../request";
+import { CORE_BACKEND_URL } from "../utils";
 
 const CapturedSuspects = () => {
-  const [suspects, setSuspects] = useState(mockSuspects);
+  const [suspects, setSuspects] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState({ country: "", gender: "" });
   const [selectedSuspect, setSelectedSuspect] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Simulated fetch function (replace with actual API call)
   const fetchSuspects = async () => {
     setIsLoading(true);
-    // Simulating API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setSuspects(mockSuspects);
-    setIsLoading(false);
+    setError(null);
+    try {
+      const result = await getSuspectsReq();
+      if (result.error) {
+        setError(result.error);
+      } else {
+        setSuspects(result.filter((suspect) => suspect.located));
+      }
+    } catch (err) {
+      setError("An error occurred while fetching suspects");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -66,7 +49,7 @@ const CapturedSuspects = () => {
     setFilter((prev) => ({ ...prev, [key]: value }));
   };
 
-  const filteredSuspects = suspects.filter(
+  const filteredSuspects = suspects?.filter(
     (suspect) =>
       suspect.name.toLowerCase().includes(search.toLowerCase()) &&
       (filter.country ? suspect.country === filter.country : true) &&
@@ -114,6 +97,10 @@ const CapturedSuspects = () => {
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
         </div>
+      ) : error ? (
+        <div className="text-red-500 text-center">{error}</div>
+      ) : filteredSuspects.length === 0 ? (
+        <div className="text-center text-gray-500">No suspects available</div>
       ) : (
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full leading-normal">
@@ -134,27 +121,29 @@ const CapturedSuspects = () => {
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Gender
                 </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Time Located
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredSuspects.map((suspect) => (
                 <tr
-                  key={suspect.id}
+                  key={suspect._id}
                   onClick={() => setSelectedSuspect(suspect)}
                   className="hover:bg-gray-50 cursor-pointer"
                 >
-                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 w-10 h-10">
-                        <FaUserCircle className="w-full h-full rounded-full text-gray-300" />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {suspect.name}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
+                  {suspect.images &&
+                  suspect.images.length > 0 &&
+                  suspect.images[0].filename ? (
+                    <img
+                      src={`${CORE_BACKEND_URL}/uploads/${suspect.images[0].filename}`}
+                      alt={suspect.name}
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <FaUserCircle className="w-full h-full rounded-full text-gray-300" />
+                  )}
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {suspect.age}
@@ -173,6 +162,11 @@ const CapturedSuspects = () => {
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {suspect.gender}
+                    </p>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {new Date(suspect.timeLocated).toLocaleString()}
                     </p>
                   </td>
                 </tr>
