@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSearch,
@@ -9,14 +9,17 @@ import {
 } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import { getSuspectsReq } from "../request";
+import { CORE_BACKEND_URL } from "../utils";
+import ImageModal from "./SuspectModal";
 
-const SuspectTableView = () => {
+const ViewSuspects = () => {
   const [suspects, setSuspects] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState({ country: "", gender: "" });
   const [selectedSuspect, setSelectedSuspect] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const fetchSuspects = async () => {
     setIsLoading(true);
@@ -106,6 +109,9 @@ const SuspectTableView = () => {
             <thead>
               <tr>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Image
+                </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Name
                 </th>
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -120,26 +126,41 @@ const SuspectTableView = () => {
                 <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Gender
                 </th>
+                <th className="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Time Located
+                </th>
               </tr>
             </thead>
             <tbody>
               {filteredSuspects.map((suspect) => (
                 <tr
                   key={suspect._id}
-                  onClick={() => setSelectedSuspect(suspect)}
                   className="hover:bg-gray-50 cursor-pointer"
                 >
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 w-10 h-10">
+                    <div
+                      className="flex-shrink-0 w-16 h-16"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSuspect(suspect);
+                        setShowImageModal(true);
+                      }}
+                    >
+                      {suspect.images && suspect.images.length > 0 ? (
+                        <img
+                          src={`${CORE_BACKEND_URL}/uploads/${suspect.images[0].filename}`}
+                          alt={suspect.name}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
                         <FaUserCircle className="w-full h-full rounded-full text-gray-300" />
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-gray-900 whitespace-no-wrap">
-                          {suspect.name}
-                        </p>
-                      </div>
+                      )}
                     </div>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {suspect.name}
+                    </p>
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
@@ -159,6 +180,11 @@ const SuspectTableView = () => {
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
                       {suspect.gender}
+                    </p>
+                  </td>
+                  <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                    <p className="text-gray-900 whitespace-no-wrap">
+                      {new Date(suspect.timeLocated).toLocaleString()}
                     </p>
                   </td>
                 </tr>
@@ -207,8 +233,18 @@ const SuspectTableView = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {showImageModal && selectedSuspect && (
+        <ImageModal
+          suspect={selectedSuspect}
+          onClose={() => {
+            setShowImageModal(false);
+            setSelectedSuspect(null);
+          }}
+        />
+      )}
     </div>
   );
 };
 
-export default SuspectTableView;
+export default ViewSuspects;
