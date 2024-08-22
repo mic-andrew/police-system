@@ -169,7 +169,18 @@ const ViewSuspects = () => {
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
                     <p className="text-gray-900 whitespace-no-wrap">
-                      {suspect.lastLocation}
+                      {suspect.lastLocation && (
+                        <>
+                          {suspect.lastLocation
+                            .split(",")
+                            .map((coord, index) => (
+                              <span key={index}>
+                                {parseFloat(coord).toFixed(2)}°
+                                {index === 0 ? " N, " : " E"}
+                              </span>
+                            ))}
+                        </>
+                      )}
                     </p>
                   </td>
                   <td className="px-5 py-5 border-b border-gray-200 bg-white text-sm">
